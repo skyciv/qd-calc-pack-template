@@ -1,19 +1,25 @@
+# Quick Design Calc Pack Template
 
-# How to build your own calc pack!
-This repo is a good starter template to build your own calc pack that can be read by the Quick Design framework (dev.skyciv.com/quick-design). This calc pack will automatically function as:
-- Build a standalone calculator really easily
-- Integrate it with S3D
-- Make it available via an API
-- Automated UI and result displays
-- Repurpose as a free tool
+## How to build your own calc pack!
+This repo is a good starter template to build your own calc pack that can be read by the SkyCiv Quick Design framework.
 
+Calc packs built using this framework cab be automatically:
 
-## Quick Start
-To use this calc pack, clone the repo to your PC. Open the module and run `npm i` in your console. You can now run a sample calc by simply running the following command in the console:
+- Integrated with S3D.
+- Available via an API.
+- Used as a standalone calculator with reporting.
+- Create a UI and result displays.
+- Used as a free tool.
 
-`npm run verified_001`
+Once you have got the `config.json` and `calculate.js` of your calc pack you can run them in the framework. To upload and run these scripts you must access the calculator in "dev mode".
 
+## Quick Design Modes
 
+Mode | Example Link | Notes
+--- | --- | ---
+Free Tool Mode | https://platform.skyciv.com/free-quick-design | Redirects to /quick-design if logged in.
+Calculator Mode | https://platform.skyciv.com/quick-design | 
+Dev Tool Mode | https://platform.skyciv.com/dev/quick-design | Editor tab will only appear in this mode.
 
 ## Components of the calc pack
 
