@@ -1,82 +1,38 @@
 {
-    "meta": {
-        "name": "My Local Example",
-        "short_description": "An easy calculation example, good for a template.",
-        "long_description": "Helpful as a template, this simple calculation pack offers a good example of how to build your calculation.",
-        "tags": "example, template, tutorial",
-        "access": "public",
-        "logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png",
-        "developer":"sam@skyciv.com"
-    },
-    "input_variables": {
-        "rect_image": {
-            "width": "50%",
-            "src": "https://skyciv.com/wp-content/uploads/2023/01/qd_rect_dims.png",
-            "type": "image",
-            "info": "Image showing the height and width of a rectangle"
-        },
-        "circ_image": {
-            "width": "50%",
-            "src": "https://skyciv.com/wp-content/uploads/2023/01/qd_circ_dims.png",
-            "type": "image",
-            "info": "Image showing the height and width of a rectangle"
-        },
-        "shape": {
-            "label": "Shape",
-            "default": "Rectangular",
-            "advanced": true,
-            "type": "dropdown",
-            "options": [
-                {
-                    "selected": true,
-                    "value": "Rectangular",
-                    "name": "Rectangular"
-                },
-                {
-                    "value": "Circular",
-                    "name": "Circular"
-                }
-            ],
-            "visible_variables": {
-                "Rectangular": [
-                    ["hide", "all"],
-                    ["show", "shape"],
-                    ["show", "rect_image"],
-                    ["show", "A"],
-                    ["show", "B"]
-                ],
-                "Circular": [
-                    ["hide", "all"],
-                    ["show", "shape"],
-                    ["show", "circ_image"],
-                    ["show", "d"]
-                ]
-            }
-        },
-        "A": {
-            "type": "number",
-            "label": "Height",
-            "units": "mm",
-            "info": "The height of the section.",
-            "default": 40,
-            "min": 24,
-            "max": 52
-        },
-        "B": {
-            "type": "number",
-            "label": "Width",
-            "units": "mm",
-            "info": "The width of the section.",
-            "default": 40,
-            "min": 24,
-            "max": 52
-        },
-        "d": {
-            "type": "number",
-            "label": "Diameter",
-            "units": "mm",
-            "info": "The diameter of the section.",
-            "default": 40
-        }
-    }
+	"meta": {
+		"name": "Hypotenuse Calculator",
+		"short_description": "Find the hypotenuse of a right angle triangle based on the adjacent and opposite sides.",
+		"long_description": "Find the hypotenuse of a right angle triangle based on the adjacent and opposite sides.",
+		"tags": "example, pythagoras, tutorial",
+		"access": "public",
+		"logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png",
+		"developer": "support@skyciv.com",
+		"contact": {
+			"name": "Jake",
+			"role": "Software Engineer",
+			"company": "SkyCiv"
+		}
+	},
+	"input_variables": {
+		"triangle_image": {
+			"type": "canvas",
+			"id": "ui-canvas"
+		},
+		"a": {
+			"type": "number",
+			"label": "Side A",
+			"units": "m",
+			"default": 4,
+			"min": 0,
+			"max": 1000
+		},
+		"b": {
+			"type": "number",
+			"label": "Side B",
+			"units": "m",
+			"default": 3,
+			"min": 0,
+			"max": 1000
+		}
+	}
 }

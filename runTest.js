@@ -11,15 +11,26 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Define test file
-const test_file_arg = log(process.argv[2])
+const test_file_arg = process.argv[2];
 const test_file_name = test_file_arg != undefined ? test_file_arg : "aisc_example_1";
+
+if (!fs.existsSync(__dirname + "/test_files/" + test_file_name)) {
+	log(
+		logSymbols.error, 
+		chalk.redBright("File"), 
+		chalk.whiteBright(test_file_name),
+		chalk.redBright("does not exist in /test_files directory")
+	);
+	process.exit();
+}
 
 // Grab config.json, calculate.json and input
 const config_json = fs.readFileSync(__dirname + "/config.json", "utf8");
 const calculate_js = fs.readFileSync(__dirname + "/calculate.js", "utf8");
 const input = fs.readFileSync(__dirname + "/test_files/" + test_file_name + "/input.json", "utf8");
 
-const request_url = "https://platform.skyciv.com:8088/runTestScript";
+//const request_url = "https://platform.skyciv.com:8088/runTestScript";
+const request_url = "http://skyciv.test:8087/runTestScript";
 
 const checkOutputMatches = function (output) {
 	let expectedOutputPath =
@@ -39,13 +50,13 @@ const checkOutputMatches = function (output) {
 			} else if (output[elem].value == undefined) {
 				results_correct = false;
 				log(logSymbols.warning, "Output missing value for key:", elem);
-			} else if (expected_value !== results_value) {
+			} else if (expected_value.value != results_value.value) {
 				results_correct = false;
 				log(
 					logSymbols.warning,
 					"Output value for key:",
 					elem,
-					" did not match expected result"
+					"did not match expected result"
 				);
 			}
 		});
@@ -61,15 +72,11 @@ const checkOutputMatches = function (output) {
 };
 
 const saveTempOutput = function (output) {
-
 	let tempDir = __dirname + "/temp/";
 	fs.mkdirSync(tempDir, { recursive: true });
-
 	fs.writeFileSync(tempDir + "/input.json", input);
-	fs.writeFileSync(tempDir + "/output.json", JSON.stringify(output));
-
+	if (output) fs.writeFileSync(tempDir + "/output.json", JSON.stringify(output));
 	log(logSymbols.info, chalk.whiteBright("Saved latest output to temp directory"));
-
 }
 
 const handleSuccess = function (output) {
@@ -88,8 +95,8 @@ const handleSuccess = function (output) {
 };
 
 const handleError = function (output) {
-	log(logSymbols.error, chalk.redBright("Test Script Failed to Run"));
-	let results = output.results;
+	log(logSymbols.error, chalk.redBright("Test Script Failed"));
+	let results = output.msg;
 	saveTempOutput(results);
 };
 
@@ -105,17 +112,18 @@ const runTest = function() {
 
 	request.post(
 		request_url,
-		{ json: true, body: {payloadData} },
+		{ json: true, body: { payload: payloadData } },
 		function (err, res, body) {
 			if (!err && res.statusCode === 200) {
-				
 				log(chalk.greenBright(logSymbols.success, "Server Response Received"));
-	
 				if (body.status === 0) {
 					handleSuccess(body);
 				} else {
 					handleError(body);
 				}
+			} else {
+				log(chalk.redBright(logSymbols.error, "No Server Response"));
+				log(err)
 			}
 		}
 	);
