@@ -1,77 +1,125 @@
-//const https = require('https');
-const fs = require('fs');
-const request = require('request');
+import fs from "fs";
+import url from "url";
+import path from "path";
+import chalk from "chalk";
+import request from "request";
+import logSymbols from "log-symbols";
 
+// Globals
+const log = console.log;
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const test_file_name = "verified_001";
+// Define test file
+const test_file_arg = log(process.argv[2])
+const test_file_name = test_file_arg != undefined ? test_file_arg : "aisc_example_1";
 
+// Grab config.json, calculate.json and input
+const config_json = fs.readFileSync(__dirname + "/config.json", "utf8");
+const calculate_js = fs.readFileSync(__dirname + "/calculate.js", "utf8");
+const input = fs.readFileSync(__dirname + "/test_files/" + test_file_name + "/input.json", "utf8");
 
-var config_file = fs.readFileSync(__dirname + "/config.json", 'utf8');
-var calculate_js = fs.readFileSync(__dirname + "/calculate.js", 'utf8');
-var input = fs.readFileSync(__dirname + "/test_files/"+test_file_name+'/input.json', 'utf8');
-var s3d_model;
-try {
-  s3d_model = fs.readFileSync(__dirname + "/test_files/"+test_file_name+'/s3d_model.json', 'utf8');
-} catch(e) {
-  
-}
+const request_url = "https://platform.skyciv.com:8088/runTestScript";
 
-var url = "https://dev.skyciv.com:8088/runTestScript";
-//url = "https://skyciv.test:8087/runTestScript";
-var postData = {
-  config_file: config_file,
-  calculate_js: calculate_js,
-  input: input
+const checkOutputMatches = function (output) {
+	let expectedOutputPath =
+		__dirname + "/test_files/" + test_file_name + "/expected_return.json";
+	if (fs.existsSync(expectedOutputPath)) {
+		let expected_output = JSON.parse(
+			fs.readFileSync(expectedOutputPath, "utf8")
+		);
+		let results_correct = true;
+
+		Object.keys(expected_output).forEach((elem) => {
+			let expected_value = expected_output[elem];
+			let results_value = output[elem];
+			if (output[elem] == undefined) {
+				results_correct = false;
+				log(logSymbols.warning, "Output missing key:", elem);
+			} else if (output[elem].value == undefined) {
+				results_correct = false;
+				log(logSymbols.warning, "Output missing value for key:", elem);
+			} else if (expected_value !== results_value) {
+				results_correct = false;
+				log(
+					logSymbols.warning,
+					"Output value for key:",
+					elem,
+					" did not match expected result"
+				);
+			}
+		});
+
+		return results_correct;
+	} else {
+		log(
+			logSymbols.warning,
+			chalk.whiteBright("No expected_return.json provided.")
+		);
+		return false;
+	}
 };
 
+const saveTempOutput = function (output) {
 
-request.post(url, {json: true, body: postData}, function(err, res, body) {
-  console.log(err)
-    if (!err && res.statusCode === 200) {
-        funcTwo(body, function(err, output) {
-            console.log(err, output);
-        });
-    }
-});
+	let tempDir = __dirname + "/temp/";
+	fs.mkdirSync(tempDir, { recursive: true });
 
+	fs.writeFileSync(tempDir + "/input.json", input);
+	fs.writeFileSync(tempDir + "/output.json", JSON.stringify(output));
 
-function funcTwo(input, callback) {
-    // process input
-    console.log(input)
-    callback(null, input);
+	log(logSymbols.info, chalk.whiteBright("Saved latest output to temp directory"));
+
 }
 
-/*
-var postData = JSON.stringify({
-    config_file: config_file,
-    calculate_js: calculate_js,
-    input:input
-});
+const handleSuccess = function (output) {
 
-var options = {
-  hostname: 'https://dev.skyciv.com',
-  port: 8088,
-  path: '/runTestScript',
-  method: 'POST',
-  headers: {
-       'Content-Type': 'application/x-www-form-urlencoded',
-       'Content-Length': postData.length
-     }
+	log(logSymbols.success, chalk.greenBright("Test Script Ran Successfully"));
+	let results = output.results;
+	let results_correct = checkOutputMatches(results);
+
+	if (results_correct) {
+		log(logSymbols.success, chalk.greenBright("Results match return.json"));
+	} else {
+		log(logSymbols.error, chalk.redBright("Error: Results do not return.json, see warning above"));
+	}
+
+	saveTempOutput(results);
 };
 
-var req = https.request(options, (res) => {
-  console.log('statusCode:', res.statusCode);
-  console.log('headers:', res.headers);
+const handleError = function (output) {
+	log(logSymbols.error, chalk.redBright("Test Script Failed to Run"));
+	let results = output.results;
+	saveTempOutput(results);
+};
 
-  res.on('data', (d) => {
-    process.stdout.write("data",d);
-  });
-});
+const runTest = function() {
+	
+	log(logSymbols.info, chalk.whiteBright("Running Test Script:"), chalk.blue(test_file_name));
 
-req.on('error', (e) => {
-  console.error("error",e);
-});
+	const payloadData = JSON.stringify({
+		config_json: config_json,
+		calculate_js: calculate_js,
+		input_json: input,
+	});
 
-req.write(postData);
-req.end();
-*/
+	request.post(
+		request_url,
+		{ json: true, body: {payloadData} },
+		function (err, res, body) {
+			if (!err && res.statusCode === 200) {
+				
+				log(chalk.greenBright(logSymbols.success, "Server Response Received"));
+	
+				if (body.status === 0) {
+					handleSuccess(body);
+				} else {
+					handleError(body);
+				}
+			}
+		}
+	);
+
+}
+
+runTest();
