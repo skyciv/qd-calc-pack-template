@@ -14,24 +14,6 @@ const __dirname = path.dirname(__filename);
 const test_file_arg = process.argv[2];
 const test_file_name = test_file_arg != undefined ? test_file_arg : "aisc_example_1";
 
-if (!fs.existsSync(__dirname + "/test_files/" + test_file_name)) {
-	log(
-		logSymbols.error, 
-		chalk.redBright("File"), 
-		chalk.whiteBright(test_file_name),
-		chalk.redBright("does not exist in /test_files directory")
-	);
-	process.exit();
-}
-
-// Grab config.json, calculate.json and input
-const config_json = fs.readFileSync(__dirname + "/config.json", "utf8");
-const calculate_js = fs.readFileSync(__dirname + "/calculate.js", "utf8");
-const input = fs.readFileSync(__dirname + "/test_files/" + test_file_name + "/input.json", "utf8");
-
-//const request_url = "https://platform.skyciv.com:8088/runTestScript";
-const request_url = "http://skyciv.test:8087/runTestScript";
-
 const checkOutputMatches = function (output) {
 	let expectedOutputPath =
 		__dirname + "/test_files/" + test_file_name + "/expected_return.json";
@@ -71,7 +53,7 @@ const checkOutputMatches = function (output) {
 	}
 };
 
-const saveTempOutput = function (output) {
+const saveTempOutput = function (input, output) {
 	let tempDir = __dirname + "/temp/";
 	fs.mkdirSync(tempDir, { recursive: true });
 	fs.writeFileSync(tempDir + "/input.json", input);
@@ -79,7 +61,7 @@ const saveTempOutput = function (output) {
 	log(logSymbols.info, chalk.whiteBright("Saved latest output to temp directory"));
 }
 
-const handleSuccess = function (output) {
+const handleSuccess = function (input, output) {
 
 	log(logSymbols.success, chalk.greenBright("Test Script Ran Successfully"));
 	let results = output.results;
@@ -91,16 +73,25 @@ const handleSuccess = function (output) {
 		log(logSymbols.error, chalk.redBright("Error: Results do not return.json, see warning above"));
 	}
 
-	saveTempOutput(results);
+	saveTempOutput(input, results);
+	return;
 };
 
-const handleError = function (output) {
+const handleError = function (input, output) {
 	log(logSymbols.error, chalk.redBright("Test Script Failed"));
 	let results = output.msg;
-	saveTempOutput(results);
+	saveTempOutput(input, results);
+	return;
 };
 
-const runTest = function() {
+const runTest = function(test_file_name) {
+
+	// Grab config.json, calculate.json and input
+	const config_json = fs.readFileSync(__dirname + "/config.json", "utf8");
+	const calculate_js = fs.readFileSync(__dirname + "/calculate.js", "utf8");
+	const input = fs.readFileSync(__dirname + "/test_files/" + test_file_name + "/input.json", "utf8");
+	const request_url = "https://platform.skyciv.com:8088/runTestScript";
+
 	
 	log(logSymbols.info, chalk.whiteBright("Running Test Script:"), chalk.blue(test_file_name));
 
@@ -110,24 +101,51 @@ const runTest = function() {
 		input_json: input,
 	});
 
-	request.post(
-		request_url,
-		{ json: true, body: { payload: payloadData } },
-		function (err, res, body) {
-			if (!err && res.statusCode === 200) {
-				log(chalk.greenBright(logSymbols.success, "Server Response Received"));
-				if (body.status === 0) {
-					handleSuccess(body);
+	return new Promise(function (resolve) {
+		request.post(
+			request_url,
+			{ json: true, body: { payload: payloadData } },
+			function (err, res, body) {
+				if (!err && res.statusCode === 200) {
+					log(chalk.greenBright(logSymbols.success, "Server Response Received"));
+					if (body.status === 0) {
+						handleSuccess(input, body);
+					} else {
+						handleError(input, body);
+					}
+					resolve();
 				} else {
-					handleError(body);
+					log(chalk.redBright(logSymbols.error, "No Server Response"));
+					log(err);
+					resolve();
 				}
-			} else {
-				log(chalk.redBright(logSymbols.error, "No Server Response"));
-				log(err)
 			}
-		}
-	);
-
+		);
+	});
 }
 
-runTest();
+if (test_file_arg == "all") {
+	fs.readdir(__dirname + "/test_files/", async function(err, filenames) {
+		if (err) {
+			log(
+				logSymbols.error, 
+				chalk.redBright("Failed to run all test files"), 
+			);
+			process.exit();
+		} else {
+			for (var test_file of filenames) {
+				await runTest(test_file);
+			}
+		}
+	});
+} else if (fs.existsSync(__dirname + "/test_files/" + test_file_name)) {
+	runTest(test_file_name);
+} else {
+	log(
+		logSymbols.error, 
+		chalk.redBright("File"), 
+		chalk.whiteBright(test_file_name),
+		chalk.redBright("does not exist in /test_files directory")
+	);
+	process.exit();
+}
