@@ -47,6 +47,8 @@ When running test files the values returned will be validated against the ones l
 
 ![](https://skyciv.com/wp-content/uploads/2023/02/SuccessfulTestExample.png)
 
+To run all tests please run `npm run test all`
+
 ## Support
 
 If you need help developing your calc pack please reach out to support@slyciv.com.
