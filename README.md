@@ -54,4 +54,3 @@ To run all tests please run `npm run test all`
 If you need help developing your calc pack please reach out to support@slyciv.com.
 
 ![](https://platform.skyciv.com/storage/images/logo-pack/SkyCiv_Logo_Dark_Poweredby.png#gh-dark-mode-only)
-![](https://platform.skyciv.com/storage/images/logo-pack/SkyCiv_Logo_NoTagline_220px.png#gh-light-mode-only)
