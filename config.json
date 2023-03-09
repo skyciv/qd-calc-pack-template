@@ -5,13 +5,13 @@
 		"long_description": "Find the hypotenuse of a right angle triangle based on the adjacent and opposite sides.",
 		"tags": "example, pythagoras, tutorial",
 		"access": "public",
-		"logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png",
-		"developer": "support@skyciv.com",
-		"contact": {
-			"name": "Jake",
-			"role": "Software Engineer",
-			"company": "SkyCiv"
-		}
+        "contact": {
+            "name": "SkyCiv",
+            "role": "Software Developer",
+            "email": "support@skyciv.com",
+            "company": "SkyCiv",
+            "logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png"
+        }
 	},
 	"input_variables": {
 		"triangle_image": {
