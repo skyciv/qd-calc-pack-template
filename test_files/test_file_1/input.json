@@ -1,16 +1,1 @@
-{
-    "a": 3,
-    "b": 4,
-    "project_details": {
-        "units": {
-            "project_units": ""
-        },
-        "project_company": "",
-        "project_name": "",
-        "project_designer": "",
-        "project_id": "",
-        "project_client": "",
-        "project_notes": "",
-        "company_logo": "https://skyciv.test/storage/user_data/company_logos/174931_632902bb549eb.png"
-    }
-}
+{"shape":"Rectangular","h":80,"b":40,"project_details":{"units":{"project_units":""},"project_company":"","project_name":"","project_designer":"","project_id":"","project_client":"","project_notes":"","company_logo":"https://skyciv.test/storage/user_data/company_logos/174931_632902bb549eb.png"}}

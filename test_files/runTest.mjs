@@ -12,11 +12,10 @@ const __dirname = path.dirname(__filename);
 
 // Define test file
 const test_file_arg = process.argv[2];
-const test_file_name = test_file_arg != undefined ? test_file_arg : "aisc_example_1";
 
-const checkOutputMatches = function (output) {
-	let expectedOutputPath =
-		__dirname + "/test_files/" + test_file_name + "/expected_return.json";
+const checkOutputMatches = function (output, test_file_name) {
+	let expectedOutputPath = __dirname + "/" + test_file_name + "/expected_return.json";
+
 	if (fs.existsSync(expectedOutputPath)) {
 		let expected_output = JSON.parse(
 			fs.readFileSync(expectedOutputPath, "utf8")
@@ -28,19 +27,27 @@ const checkOutputMatches = function (output) {
 			let results_value = output[elem];
 			if (output[elem] == undefined) {
 				results_correct = false;
-				log(logSymbols.warning, "Output missing key:", elem);
-			} else if (output[elem].value == undefined) {
-				results_correct = false;
-				log(logSymbols.warning, "Output missing value for key:", elem);
-			} else if (expected_value.value != results_value.value) {
-				results_correct = false;
-				log(
-					logSymbols.warning,
-					"Output value for key:",
-					elem,
-					"did not match expected result"
-				);
+				log(logSymbols.warning, " Output missing key:", elem);
+			} 
+
+			if (expected_value.value != undefined) {
+
+				if (output[elem].value == undefined) {
+					results_correct = false;
+					log(logSymbols.warning, " Output missing value for key:", elem);
+				} 
+				
+				if (expected_value.value != results_value.value) {
+					results_correct = false;
+					log(
+						logSymbols.warning,
+						" Output value for key:",
+						elem,
+						"did not match expected result"
+					);
+				}
 			}
+			
 		});
 
 		return results_correct;
@@ -61,11 +68,11 @@ const saveTempOutput = function (input, output) {
 	log(logSymbols.info, chalk.whiteBright("Saved latest output to temp directory"));
 }
 
-const handleSuccess = function (input, output) {
+const handleSuccess = function (input, output, test_file_name) {
 
 	log(logSymbols.success, chalk.greenBright("Test Script Ran Successfully"));
-	let results = output.results;
-	let results_correct = checkOutputMatches(results);
+	let results = output.data.results;
+	let results_correct = checkOutputMatches(results, test_file_name);
 
 	if (results_correct) {
 		log(logSymbols.success, chalk.greenBright("Results match return.json"));
@@ -87,11 +94,11 @@ const handleError = function (input, output) {
 const runTest = function(test_file_name) {
 
 	// Grab config.json, calculate.json and input
-	const config_json = fs.readFileSync(__dirname + "/config.json", "utf8");
-	const calculate_js = fs.readFileSync(__dirname + "/calculate.js", "utf8");
-	const input = fs.readFileSync(__dirname + "/test_files/" + test_file_name + "/input.json", "utf8");
-	const request_url = "https://platform.skyciv.com:8088/runTestScript";
-
+	const config_json = fs.readFileSync(__dirname + "/../config.json", "utf8");
+	const calculate_js = fs.readFileSync(__dirname + "/../calculate.js", "utf8");
+	const request_url = "http://skyciv.test:8087/runTestScript";
+	const input = fs.readFileSync(__dirname + "/" + test_file_name + "/input.json", "utf8");
+	const api_credentials = JSON.parse(fs.readFileSync(__dirname + "/../api_credentials.json", "utf8"));
 	
 	log(logSymbols.info, chalk.whiteBright("Running Test Script:"), chalk.blue(test_file_name));
 
@@ -99,6 +106,8 @@ const runTest = function(test_file_name) {
 		config_json: config_json,
 		calculate_js: calculate_js,
 		input_json: input,
+		auth: api_credentials["auth"],
+		key: api_credentials["key"]
 	});
 
 	return new Promise(function (resolve) {
@@ -109,7 +118,7 @@ const runTest = function(test_file_name) {
 				if (!err && res.statusCode === 200) {
 					log(chalk.greenBright(logSymbols.success, "Server Response Received"));
 					if (body.status === 0) {
-						handleSuccess(input, body);
+						handleSuccess(input, body, test_file_name);
 					} else {
 						handleError(input, body);
 					}
@@ -125,7 +134,7 @@ const runTest = function(test_file_name) {
 }
 
 if (test_file_arg == "all") {
-	fs.readdir(__dirname + "/test_files/", async function(err, filenames) {
+	fs.readdir(__dirname + "/", async function(err, filenames) {
 		if (err) {
 			log(
 				logSymbols.error, 
@@ -134,11 +143,15 @@ if (test_file_arg == "all") {
 			process.exit();
 		} else {
 			for (var test_file of filenames) {
+
+				if (test_file.indexOf("runTest.mjs") > -1) continue;
+				if (test_file.indexOf(".xlsx") > -1) continue;
+
 				await runTest(test_file);
 			}
 		}
 	});
-} else if (fs.existsSync(__dirname + "/test_files/" + test_file_name)) {
+} else if (fs.existsSync(__dirname + "/" + test_file_name)) {
 	runTest(test_file_name);
 } else {
 	log(
@@ -149,3 +162,6 @@ if (test_file_arg == "all") {
 	);
 	process.exit();
 }
+
+			
+		

@@ -1,38 +1,100 @@
 {
 	"meta": {
-		"name": "Hypotenuse Calculator",
-		"short_description": "Find the hypotenuse of a right angle triangle based on the adjacent and opposite sides.",
-		"long_description": "Find the hypotenuse of a right angle triangle based on the adjacent and opposite sides.",
-		"tags": "example, pythagoras, tutorial",
+		"name": "Good Example",
+		"short_description": "A good example showing a range of inputs, calculations and ReportHelpers",
+		"long_description": "<p>This should be long format description (minimum of 500 words) which is REQUIRED to submit. This means free tools will rank better.. This should include:</p><ul><li>Headings</li><li>Instructions on how to use the tool</li><li>Technical information and info on input</li><li>Examples or Images of output</li></ul>",
+		"seo_content": "<h1>Aluminum Design Calculator</h1><p>The following calculator helps engineers run quick and easy alluminum calculations...</p>",
+		"tags": "tutorial, example, template, reporthelpers, sample",
 		"access": "public",
-        "contact": {
-            "name": "SkyCiv",
-            "role": "Software Developer",
-            "email": "support@skyciv.com",
-            "company": "SkyCiv",
-            "logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png"
-        }
+		"contact": {
+			"name": "Sam",
+			"role": "Engineer",
+			"company": "SkyCiv",
+			"email": "sam@skyciv.com",
+			"logo": "https://skyciv.com/media/logos/logo-pack/SkyCiv_Logo_Dark_Poweredby.png"
+		}
 	},
 	"input_variables": {
-		"triangle_image": {
-			"type": "canvas",
-			"id": "ui-canvas"
+		"rect_image": {
+			"width": "50%",
+			"src": "https://skyciv.com/wp-content/uploads/2023/01/qd_rect_dims.png",
+			"type": "image",
+			"info": "Image showing the height and width of a rectangle",
+			"class": "rectangular-dims"
 		},
-		"a": {
+		"circ_image": {
+			"width": "50%",
+			"src": "https://skyciv.com/wp-content/uploads/2023/01/qd_circ_dims.png",
+			"type": "image",
+			"info": "Image showing the height and width of a rectangle",
+			"class": "circular-dims"
+		},
+		"shape": {
+			"label": "Shape",
+			"default": "Rectangular",
+			"advanced": true,
+			"type": "dropdown",
+			"options": [
+				{
+					"selected": true,
+					"value": "Rectangular",
+					"name": "Rectangular"
+				},
+				{
+					"value": "Circular",
+					"name": "Circular"
+				}
+			],
+			"visible_variables": {
+				"Rectangular": [
+					[
+						"hide",
+						"all"
+					],
+					[
+						"show",
+						".rectangular-dims"
+					]
+				],
+				"Circular": [
+					[
+						"hide",
+						"all"
+					],
+					[
+						"show",
+						".circular-dims"
+					]
+				]
+			}
+		},
+		"h": {
 			"type": "number",
-			"label": "Side A",
-			"units": "m",
-			"default": 4,
+			"label": "Height",
+			"units": "mm",
+			"info": "The height of the section.",
+			"default": 80,
 			"min": 0,
-			"max": 1000
+			"max": 10000,
+			"class": "rectangular-dims"
 		},
 		"b": {
 			"type": "number",
-			"label": "Side B",
-			"units": "m",
-			"default": 3,
+			"label": "Width",
+			"units": "mm",
+			"info": "The width of the section.",
+			"default": 40,
 			"min": 0,
-			"max": 1000
+			"max": 10000,
+			"class": "rectangular-dims"
+		},
+		"d": {
+			"type": "number",
+			"label": "Diameter",
+			"units": "mm",
+			"info": "The diameter of the section.",
+			"default": 40,
+			"class": "circular-dims"
 		}
 	}
 }

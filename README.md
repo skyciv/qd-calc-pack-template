@@ -16,14 +16,6 @@ Once you have got the `config.json` and `calculate.js` of your calc pack you can
 
 Please run `npm i`
 
-## Quick Design Modes
-
-Mode | Example Link | Notes
---- | --- | ---
-Free Tool Mode | https://platform.skyciv.com/free-quick-design | Redirects to /quick-design if logged in.
-Calculator Mode | https://platform.skyciv.com/quick-design | 
-Dev Tool Mode | https://platform.skyciv.com/dev/quick-design | Editor tab will only appear in this mode.
-
 ## Components of the calc pack
 
 File | Required | Description 

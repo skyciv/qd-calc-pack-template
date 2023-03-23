@@ -2,9 +2,8 @@
   "name": "qd-calc-pack-template",
   "version": "1.0.0",
   "description": "Template repo for SkyCiv Quick Design Calc Packs",
-  "type": "module",
   "scripts": {
-    "test": "node runTest.js"
+    "test": "node ./test_files/runTest.mjs"
   },
   "repository": {
     "type": "git",
