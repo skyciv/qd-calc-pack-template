@@ -75,9 +75,9 @@ const handleSuccess = function (input, output, test_file_name) {
 	let results_correct = checkOutputMatches(results, test_file_name);
 
 	if (results_correct) {
-		log(logSymbols.success, chalk.greenBright("Results match return.json"));
+		log(logSymbols.success, chalk.greenBright("Results match expected_return.json"));
 	} else {
-		log(logSymbols.error, chalk.redBright("Error: Results do not return.json, see warning above"));
+		log(logSymbols.error, chalk.redBright("Error: Results did not match expected_return.json, see warning above"));
 	}
 
 	saveTempOutput(input, results);
@@ -96,7 +96,7 @@ const runTest = function(test_file_name) {
 	// Grab config.json, calculate.json and input
 	const config_json = fs.readFileSync(__dirname + "/../config.json", "utf8");
 	const calculate_js = fs.readFileSync(__dirname + "/../calculate.js", "utf8");
-	const request_url = "https://platform.skyciv.com:8088/runTestScript";
+	const request_url = "https://dev.skyciv.com:8088/runTestScript";
 	const input = fs.readFileSync(__dirname + "/" + test_file_name + "/input.json", "utf8");
 	const api_credentials = JSON.parse(fs.readFileSync(__dirname + "/../api_credentials.json", "utf8"));
 	
