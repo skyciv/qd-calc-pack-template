@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Template repo for SkyCiv Quick Design Calc Packs",
   "scripts": {
-    "test": "node --experimental-modules ./test_files/runTest.mjs"
+    "test": "node --experimental-modules ./test_files/runTest.mjs",
+    "test_basic": "node --experimental-modules ./test_files/runTestBasic.js"
   },
   "repository": {
     "type": "git",

@@ -33,6 +33,10 @@ You can build and run test files you create for your repo using the command:
 
 `npm run test your_test_file`
 
+If running an old version of node:
+
+`npm run test_basic your_test_file`
+
 Test files must be located in the **/test_files/** directory.
 Create a new directory for each test file. Each test file will need both a `input.json` and an `expected_return.json`.
 
@@ -40,7 +44,7 @@ When running test files the values returned will be validated against the ones l
 
 ![](https://skyciv.com/wp-content/uploads/2023/02/SuccessfulTestExample.png)
 
-To run all tests please run `npm run test all`
+To run all tests please run `npm run test all` or `npm run test_basic all`
 
 ## Support
 
