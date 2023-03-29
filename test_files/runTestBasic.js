@@ -118,8 +118,7 @@ if (test_file_arg == "all") {
 			process.exit();
 		} else {
 			for (var test_file of filenames) {
-
-				
+	
 				if (test_file.indexOf("runTest.mjs") > -1) continue;
 				if (test_file.indexOf("runTestBasic.js") > -1) continue;
 				if (test_file.indexOf(".xlsx") > -1) continue;
