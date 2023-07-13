@@ -2,7 +2,7 @@
 ## Building your own calc pack
 This repo is a good starter template to build your own calc pack that can be read by the SkyCiv Quick Design framework.
 
-Calc packs built using this framework cab be automatically:
+Calc packs built using this framework can be automatically:
 
 - Integrated with S3D.
 - Available via an API.
