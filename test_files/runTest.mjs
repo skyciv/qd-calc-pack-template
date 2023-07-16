@@ -28,11 +28,12 @@ const checkOutputMatches = function (output, test_file_name) {
 			if (output[elem] == undefined) {
 				results_correct = false;
 				log(logSymbols.warning, " Output missing key:", elem);
+				return;
 			} 
 
-			if (expected_value.value != undefined) {
+			if (expected_value.value != undefined && results_value.value != undefined) {
 
-				if (output[elem].value == undefined) {
+				if (output[elem] == undefined || output[elem].value == undefined) {
 					results_correct = false;
 					log(logSymbols.warning, " Output missing value for key:", elem);
 				} 
@@ -96,7 +97,7 @@ const runTest = function(test_file_name) {
 	// Grab config.json, calculate.json and input
 	const config_json = fs.readFileSync(__dirname + "/../config.json", "utf8");
 	const calculate_js = fs.readFileSync(__dirname + "/../calculate.js", "utf8");
-	const request_url = "https://platform.skyciv.com:8088/runTestScript";
+	const request_url = "https://qd.skyciv.com:8087/runTestScript";
 	const input = fs.readFileSync(__dirname + "/" + test_file_name + "/input.json", "utf8");
 	const api_credentials = JSON.parse(fs.readFileSync(__dirname + "/../api_credentials.json", "utf8"));
 	
