@@ -72,6 +72,7 @@ const handleSuccess = function (input, output, test_file_name) {
 
 const handleError = function (input, output) {
 	log("Test Script Failed");
+	log("Please check you have included the correct API credentials in api_credentials.json");
 	let results = output.msg;
 	saveTempOutput(input, results);
 	return;
@@ -111,6 +112,7 @@ const runTest = function(test_file_name) {
 					resolve();
 				} else {
 					log("No Server Response");
+					log("Please check you have included the correct API credentials in api_credentials.json");
 					log(err);
 					resolve();
 				}
@@ -139,10 +141,10 @@ if (test_file_arg == "all") {
 			}
 		}
 	});
-} else if (fs.existsSync(__dirname + "/" + test_file_name)) {
-	runTest(test_file_name);
+} else if (fs.existsSync(__dirname + "/" + test_file_arg)) {
+	runTest(test_file_arg);
 } else {
-	log("File", test_file_name, "does not exist in test_files directory");
+	log("File", test_file_arg, "does not exist in test_files directory");
 	process.exit();
 }
 

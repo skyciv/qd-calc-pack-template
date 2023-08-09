@@ -87,6 +87,7 @@ const handleSuccess = function (input, output, test_file_name) {
 
 const handleError = function (input, output) {
 	log(logSymbols.error, chalk.redBright("Test Script Failed"));
+	log(chalk.redBright(logSymbols.warning, "Please check you have included the correct API credentials in api_credentials.json"));
 	let results = output.msg;
 	saveTempOutput(input, results);
 	return;
@@ -126,6 +127,7 @@ const runTest = function(test_file_name) {
 					resolve();
 				} else {
 					log(chalk.redBright(logSymbols.error, "No Server Response"));
+					log(chalk.redBright(logSymbols.warning, "Please check you have included the correct API credentials in api_credentials.json"));
 					log(err);
 					resolve();
 				}
@@ -154,13 +156,13 @@ if (test_file_arg == "all") {
 			}
 		}
 	});
-} else if (fs.existsSync(__dirname + "/" + test_file_name)) {
-	runTest(test_file_name);
+} else if (fs.existsSync(__dirname + "/" + test_file_arg)) {
+	runTest(test_file_arg);
 } else {
 	log(
 		logSymbols.error, 
 		chalk.redBright("File"), 
-		chalk.whiteBright(test_file_name),
+		chalk.whiteBright(test_file_arg),
 		chalk.redBright("does not exist in /test_files directory")
 	);
 	process.exit();
