@@ -25,6 +25,7 @@ const checkOutputMatches = function (output, test_file_name) {
 		Object.keys(expected_output).forEach((elem) => {
 			let expected_value = expected_output[elem];
 			let results_value = output[elem];
+
 			if (output[elem] == undefined) {
 				results_correct = false;
 				log(logSymbols.warning, " Output missing key:", elem);
@@ -87,8 +88,7 @@ const handleSuccess = function (input, output, test_file_name) {
 
 const handleError = function (input, output) {
 	log(logSymbols.error, chalk.redBright("Test Script Failed"));
-	log(chalk.redBright(logSymbols.warning, "Please check you have included the correct API credentials in api_credentials.json"));
-	let results = output.msg;
+	let results = output;
 	saveTempOutput(input, results);
 	return;
 };
@@ -98,10 +98,35 @@ const runTest = function(test_file_name) {
 	// Grab config.json, calculate.json and input
 	const config_json = fs.readFileSync(__dirname + "/../config.json", "utf8");
 	const calculate_js = fs.readFileSync(__dirname + "/../calculate.js", "utf8");
-	const request_url = "https://qd.skyciv.com:8087/runTestScript";
+	const request_url = "https://qd.skyciv.com:8088/runTestScript";
 	const input = fs.readFileSync(__dirname + "/" + test_file_name + "/input.json", "utf8");
 	const api_credentials = JSON.parse(fs.readFileSync(__dirname + "/../api_credentials.json", "utf8"));
+
+	let json_data = {};
+	let utils_data = {};
 	
+	// Check if the JSON Directory exists
+	const directoryPathJSON = path.join(__dirname, '..', 'json');
+	if (fs.existsSync(directoryPathJSON)) {
+		const files = fs.readdirSync(directoryPathJSON);
+		files.forEach(file => {
+			const filePath = path.join(directoryPathJSON, file);
+			const fileContent = fs.readFileSync(filePath, 'utf8');
+			json_data[file] = fileContent;
+		});
+	}
+	
+	// Check if the JSON Directory exists
+	const directoryPathUtils = path.join(__dirname, '..', 'utils');
+	if (fs.existsSync(directoryPathUtils)) {
+		const files = fs.readdirSync(directoryPathUtils);
+		files.forEach(file => {
+			const filePath = path.join(directoryPathUtils, file);
+			const fileContent = fs.readFileSync(filePath, 'utf8');
+			utils_data[file] = fileContent;
+		});
+	}
+
 	log(logSymbols.info, chalk.whiteBright("Running Test Script:"), chalk.blue(test_file_name));
 
 	const payloadData = JSON.stringify({
@@ -109,7 +134,9 @@ const runTest = function(test_file_name) {
 		calculate_js: calculate_js,
 		input_json: input,
 		auth: api_credentials["auth"],
-		key: api_credentials["key"]
+		key: api_credentials["key"],
+		json: json_data,
+		utils: utils_data,
 	});
 
 	return new Promise(function (resolve) {
@@ -127,7 +154,6 @@ const runTest = function(test_file_name) {
 					resolve();
 				} else {
 					log(chalk.redBright(logSymbols.error, "No Server Response"));
-					log(chalk.redBright(logSymbols.warning, "Please check you have included the correct API credentials in api_credentials.json"));
 					log(err);
 					resolve();
 				}
@@ -156,13 +182,13 @@ if (test_file_arg == "all") {
 			}
 		}
 	});
-} else if (fs.existsSync(__dirname + "/" + test_file_arg)) {
-	runTest(test_file_arg);
+} else if (fs.existsSync(__dirname + "/" + test_file_name)) {
+	runTest(test_file_name);
 } else {
 	log(
 		logSymbols.error, 
 		chalk.redBright("File"), 
-		chalk.whiteBright(test_file_arg),
+		chalk.whiteBright(test_file_name),
 		chalk.redBright("does not exist in /test_files directory")
 	);
 	process.exit();
