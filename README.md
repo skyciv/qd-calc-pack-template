@@ -14,8 +14,8 @@ Once you have got the `config.json` and `calculate.js` of your calc pack you can
 
 ## Setting up this repo
 
-Please run `npm i`
-Add your api credentials to config.json
+- Please run `npm i`
+- Add your api credentials to `api_credentials.json`
 
 ## Components of the calc pack
 
