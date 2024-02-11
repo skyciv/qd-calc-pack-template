@@ -83,7 +83,7 @@ const runTest = function(test_file_name) {
 	// Grab config.json, calculate.json and input
 	const config_json = fs.readFileSync(__dirname + "/../config.json", "utf8");
 	const calculate_js = fs.readFileSync(__dirname + "/../calculate.js", "utf8");
-	const request_url = "https://qd.skyciv.com:8087/runTestScript";
+	const request_url = "https://qd.skyciv.com/runTestScript";
 	const input = fs.readFileSync(__dirname + "/" + test_file_name + "/input.json", "utf8");
 	const api_credentials = JSON.parse(fs.readFileSync(__dirname + "/../api_credentials.json", "utf8"));
 	
