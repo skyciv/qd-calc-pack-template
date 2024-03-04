@@ -25,10 +25,6 @@ module.exports = function (input_json) {
 	REPORT.block.addReference("<em>Tip: This is a really useful website for Latex: <a href='https://www.codecogs.com/latex/eqneditor.php' target='_blank'>Link</a></em>");
 
 	//ANOTHER WAY TO DO IT
-	REPORT.block.new("Another way is to use runFormula", 4);
-	var moi = ReportHelpers.formula("I_y = b * Math.pow(h, 3) / 12", "mm^4", 2);
-
-  //ANOTHER WAY TO DO IT
 	REPORT.block.new("Do some easy unit converting", 4);
 	ReportHelpers.print(null, "10 Inches is equal to " + ReportHelpers.convert(10, "in", "mm")+ " mm");
 	ReportHelpers.print(null, "10 kN is equal to " + ReportHelpers.convert(10, "kN", "kip")+ " kip"); 
